@@ -1,0 +1,21 @@
+# .github/workflows/sync-fork.yml
+name: Sync Fork
+
+on:
+  push:
+    branches: [dev]
+  schedule:
+    - cron: '0 0 * * *' # every day
+  workflow_dispatch: # on button click
+
+jobs:
+  sync:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: tgymnich/fork-sync@v1.9.0
+        with:
+          owner: ultralytics # 上有分支仓库所述者
+          base: master
+          head: master
