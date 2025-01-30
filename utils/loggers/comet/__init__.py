@@ -1,3 +1,5 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
 import glob
 import json
 import logging
@@ -65,6 +67,9 @@ class CometLogger:
     """Log metrics, parameters, source code, models and much more with Comet."""
 
     def __init__(self, opt, hyp, run_id=None, job_type="Training", **experiment_kwargs) -> None:
+        """Initializes CometLogger with given options, hyperparameters, run ID, job type, and additional experiment
+        arguments.
+        """
         self.job_type = job_type
         self.opt = opt
         self.hyp = hyp
@@ -83,14 +88,12 @@ class CometLogger:
         self.upload_dataset = self.opt.upload_dataset or COMET_UPLOAD_DATASET
         self.resume = self.opt.resume
 
-        # Default parameters to pass to Experiment objects
         self.default_experiment_kwargs = {
             "log_code": False,
             "log_env_gpu": True,
             "log_env_cpu": True,
             "project_name": COMET_PROJECT_NAME,
-        }
-        self.default_experiment_kwargs.update(experiment_kwargs)
+        } | experiment_kwargs
         self.experiment = self._get_experiment(self.comet_mode, run_id)
         self.experiment.set_name(self.opt.name)
 

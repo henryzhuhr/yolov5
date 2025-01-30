@@ -1,4 +1,4 @@
-# YOLOv5 🚀 by Ultralytics, AGPL-3.0 license
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 """
 Train a YOLOv5 segment model on a segment dataset Models and datasets download automatically from the latest YOLOv5
 release.
@@ -214,7 +214,11 @@ def train(hyp, opt, device, callbacks):
     if opt.cos_lr:
         lf = one_cycle(1, hyp["lrf"], epochs)  # cosine 1->hyp['lrf']
     else:
-        lf = lambda x: (1 - x / epochs) * (1.0 - hyp["lrf"]) + hyp["lrf"]  # linear
+
+        def lf(x):
+            """Linear learning rate scheduler decreasing from 1 to hyp['lrf'] over 'epochs'."""
+            return (1 - x / epochs) * (1.0 - hyp["lrf"]) + hyp["lrf"]  # linear
+
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)  # plot_lr_scheduler(optimizer, scheduler, epochs)
 
     # EMA
@@ -321,10 +325,10 @@ def train(hyp, opt, device, callbacks):
     compute_loss = ComputeLoss(model, overlap=overlap)  # init loss class
     # callbacks.run('on_train_start')
     LOGGER.info(
-        f'Image sizes {imgsz} train, {imgsz} val\n'
-        f'Using {train_loader.num_workers * WORLD_SIZE} dataloader workers\n'
+        f"Image sizes {imgsz} train, {imgsz} val\n"
+        f"Using {train_loader.num_workers * WORLD_SIZE} dataloader workers\n"
         f"Logging results to {colorstr('bold', save_dir)}\n"
-        f'Starting training for {epochs} epochs...'
+        f"Starting training for {epochs} epochs..."
     )
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         # callbacks.run('on_train_epoch_start')
@@ -401,7 +405,7 @@ def train(hyp, opt, device, callbacks):
             # Log
             if RANK in {-1, 0}:
                 mloss = (mloss * i + loss_items) / (i + 1)  # update mean losses
-                mem = f"{torch.cuda.memory_reserved() / 1E9 if torch.cuda.is_available() else 0:.3g}G"  # (GB)
+                mem = f"{torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0:.3g}G"  # (GB)
                 pbar.set_description(
                     ("%11s" * 2 + "%11.4g" * 6)
                     % (f"{epoch}/{epochs - 1}", mem, *mloss, targets.shape[0], imgs.shape[-1])
@@ -736,9 +740,9 @@ def main(opt, callbacks=Callbacks()):
         # Plot results
         plot_evolve(evolve_csv)
         LOGGER.info(
-            f'Hyperparameter evolution finished {opt.evolve} generations\n'
+            f"Hyperparameter evolution finished {opt.evolve} generations\n"
             f"Results saved to {colorstr('bold', save_dir)}\n"
-            f'Usage example: $ python train.py --hyp {evolve_yaml}'
+            f"Usage example: $ python train.py --hyp {evolve_yaml}"
         )
 
 
@@ -746,7 +750,7 @@ def run(**kwargs):
     """
     Executes YOLOv5 training with given parameters, altering options programmatically; returns updated options.
 
-    Example: mport train; train.run(data='coco128.yaml', imgsz=320, weights='yolov5m.pt')
+    Example: import train; train.run(data='coco128.yaml', imgsz=320, weights='yolov5m.pt')
     """
     opt = parse_opt(True)
     for k, v in kwargs.items():
